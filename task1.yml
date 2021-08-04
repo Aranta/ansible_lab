@@ -1,0 +1,43 @@
+---
+
+ - hosts: nodes
+  
+   tasks:
+    - name: Install the latest version of Apache
+      yum:
+       name: httpd
+       state: present
+
+    - name: Enable service
+      service: 
+       name: httpd
+       enabled: yes
+
+    - name: Start service httpd, if not started
+      service:
+       name: httpd
+       state: started
+
+    - name: Creating file index.html
+      copy:
+        dest: "/var/www/html/index.html"
+        content:
+         "Welcome to my web server"
+
+    - name: Install firewalld
+      yum:
+        name: firewalld
+        state: latest
+ 
+    - name: start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+  
+    - name: enable 80
+      firewalld:
+        zone: public
+        port: 80/tcp
+        permanent: true
+        state: enabled

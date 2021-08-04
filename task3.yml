@@ -1,0 +1,45 @@
+---
+
+ - hosts: nodes
+  
+   tasks:
+    - name: check if splash is configured in the boot command
+      lineinfile:
+        backup: true
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX=".*net.ifnames'
+        state: absent
+      check_mode: true
+      register: grub_ifnames_check
+      changed_when: false
+
+    - name: insert splash if missing
+      lineinfile:
+        backrefs: true
+        path: /etc/default/grub
+        regexp: "^(GRUB_CMDLINE_LINUX=\".*)\"$"
+        line: '\1 net.ifnames"'
+      when: grub_ifnames_check.found == 0
+      notify: update grub
+
+    - name: check if splash is configured in the boot command
+      lineinfile:
+        backup: true
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX=".*biosdevname'
+        state: absent
+      check_mode: true
+      register: grub_biosdevname_check
+      changed_when: false
+
+    - name: insert splash if missing
+      lineinfile:
+        backrefs: true
+        path: /etc/default/grub
+        regexp: "^(GRUB_CMDLINE_LINUX=\".*)\"$"
+        line: '\1 biosdevname"'
+      when: grub_biosdevname_check.found == 0
+      notify: update grub
+      
+    - name: Write grub configuration file
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg

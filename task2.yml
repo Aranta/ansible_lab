@@ -1,0 +1,22 @@
+---
+
+ - hosts: nodes
+  
+   tasks:
+    - name: Delete httpd
+      yum:
+       name: httpd
+       autoremove: yes
+       state: absent
+
+    - name: Remove file
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: enable 80
+      firewalld:
+        zone: public
+        port: 80/tcp
+        permanent: true
+        state: disabled     

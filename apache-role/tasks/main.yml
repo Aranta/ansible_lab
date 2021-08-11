@@ -1,0 +1,40 @@
+---
+# tasks file for apache-role
+#  - include: centos_8.yml
+#    when: ansible_os_family == “RedHat”
+
+  - name: install apache httpd
+    ansible.builtin.package:
+      name: "{{ httpd_packages }}"
+      state: present
+    when: 
+
+  - name: start and enable httpd
+    ansible.builtin.service:
+      name: "{{ httpd_service }}"
+      state: started
+      enabled: yes   
+
+  - name: Creating file index.html
+    copy:
+      dest: "{{ path }}"
+      content:
+        "{{ file_content }}"      
+
+  - name: Install "{{ service_name }}"
+    yum:
+      name: "{{ service_name }}"
+      state: latest
+ 
+  - name: start "{{ service_name }}"
+    service:
+      name: "{{ service_name }}"
+      state: started
+      enabled: yes
+  
+  - name: enable port "{{ port }}"
+    firewalld:
+      zone: public
+      port: "{{ port_protocol }}"
+      permanent: true
+      state: enabled

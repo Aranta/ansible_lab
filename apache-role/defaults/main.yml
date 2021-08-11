@@ -1,0 +1,15 @@
+---
+# defaults file for apache-role
+    httpd_packages: 'httpd'
+    httpd_service: 'httpd'
+    path: '/var/www/html/index.html'
+    file_content: "Welcome to my web server!"
+    service_name: 'firewalld'
+    port: '80'
+    port_protocol: '80/tcp'
+
+
+
+
+
+  
